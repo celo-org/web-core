@@ -30,7 +30,7 @@ import { EMPTY_DATA } from '@gnosis.pm/safe-core-sdk/dist/src/utils/constants'
 const getAndValidateSafeSDK = (): Safe => {
   const safeSDK = getSafeSDK()
   if (!safeSDK) {
-    throw new Error('The Safe SDK could not be initialized. Please be aware that we only support >= v1.1.1 Safes.')
+    throw new Error('The Safe SDK could not be initialized. Please be aware that we only support v1.1.1 Safes and up.')
   }
   return safeSDK
 }
@@ -195,19 +195,27 @@ export const createExistingTx = async (
  * Propose a transaction
  * If txId is passed, it's an existing tx being signed
  */
-export const dispatchTxProposal = async (
-  chainId: string,
-  safeAddress: string,
-  sender: string,
-  safeTx: SafeTransaction,
-  txId?: string,
-): Promise<TransactionDetails> => {
+export const dispatchTxProposal = async ({
+  chainId,
+  safeAddress,
+  sender,
+  safeTx,
+  txId,
+  origin,
+}: {
+  chainId: string
+  safeAddress: string
+  sender: string
+  safeTx: SafeTransaction
+  txId?: string
+  origin?: string
+}): Promise<TransactionDetails> => {
   const safeSDK = getAndValidateSafeSDK()
   const safeTxHash = await safeSDK.getTransactionHash(safeTx)
 
   let proposedTx: TransactionDetails | undefined
   try {
-    proposedTx = await proposeTx(chainId, safeAddress, sender, safeTx, safeTxHash)
+    proposedTx = await proposeTx(chainId, safeAddress, sender, safeTx, safeTxHash, origin)
   } catch (error) {
     if (txId) {
       txDispatch(TxEvent.SIGNATURE_PROPOSE_FAILED, { txId, error: error as Error })
@@ -217,7 +225,10 @@ export const dispatchTxProposal = async (
     throw error
   }
 
-  txDispatch(txId ? TxEvent.SIGNATURE_PROPOSED : TxEvent.PROPOSED, { txId: proposedTx.txId })
+  txDispatch(txId ? TxEvent.SIGNATURE_PROPOSED : TxEvent.PROPOSED, {
+    txId: proposedTx.txId,
+    signerAddress: txId ? sender : undefined,
+  })
 
   return proposedTx
 }
@@ -249,34 +260,33 @@ export const dispatchTxSigning = async (
 /**
  * On-Chain sign a transaction
  */
-export const dispatchOnChainSigning = async (safeTx: SafeTransaction, provider: Web3Provider) => {
+export const dispatchOnChainSigning = async (safeTx: SafeTransaction, provider: Web3Provider, txId: string) => {
   const sdkUnchecked = await getUncheckedSafeSDK(provider)
   const safeTxHash = await sdkUnchecked.getTransactionHash(safeTx)
-
-  txDispatch(TxEvent.EXECUTING, { groupKey: safeTxHash })
 
   try {
     // With the unchecked signer, the contract call resolves once the tx
     // has been submitted in the wallet not when it has been executed
     await sdkUnchecked.approveTransactionHash(safeTxHash)
   } catch (err) {
-    txDispatch(TxEvent.FAILED, { groupKey: safeTxHash, error: err as Error })
+    txDispatch(TxEvent.FAILED, { txId, error: err as Error })
     throw err
   }
 
-  txDispatch(TxEvent.AWAITING_ON_CHAIN_SIGNATURE, { groupKey: safeTxHash })
+  txDispatch(TxEvent.AWAITING_ON_CHAIN_SIGNATURE, { txId })
 
-  return safeTx
+  // Until the on-chain signature is/has been executed, the safeTx is not
+  // signed so we don't return it
 }
 
 /**
  * Execute a transaction
  */
 export const dispatchTxExecution = async (
-  txId: string,
   safeTx: SafeTransaction,
   provider: Web3Provider,
-  txOptions?: TransactionOptions,
+  txOptions: TransactionOptions,
+  txId: string,
 ): Promise<string> => {
   const sdkUnchecked = await getUncheckedSafeSDK(provider)
 

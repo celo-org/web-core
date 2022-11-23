@@ -164,9 +164,9 @@ describe('txSender', () => {
         data: '0x0',
       })
 
-      const proposedTx = await dispatchTxProposal('4', '0x123', '0x456', tx)
+      const proposedTx = await dispatchTxProposal({ chainId: '4', safeAddress: '0x123', sender: '0x456', safeTx: tx })
 
-      expect(proposeTx).toHaveBeenCalledWith('4', '0x123', '0x456', tx, '0x1234567890')
+      expect(proposeTx).toHaveBeenCalledWith('4', '0x123', '0x456', tx, '0x1234567890', undefined)
       expect(proposedTx).toEqual({ txId: '123' })
 
       expect(txEvents.txDispatch).toHaveBeenCalledWith('PROPOSED', { txId: '123' })
@@ -179,12 +179,18 @@ describe('txSender', () => {
         data: '0x0',
       })
 
-      const proposedTx = await dispatchTxProposal('4', '0x123', '0x456', tx, '345')
+      const proposedTx = await dispatchTxProposal({
+        chainId: '4',
+        safeAddress: '0x123',
+        sender: '0x456',
+        safeTx: tx,
+        txId: '345',
+      })
 
-      expect(proposeTx).toHaveBeenCalledWith('4', '0x123', '0x456', tx, '0x1234567890')
+      expect(proposeTx).toHaveBeenCalledWith('4', '0x123', '0x456', tx, '0x1234567890', undefined)
       expect(proposedTx).toEqual({ txId: '123' })
 
-      expect(txEvents.txDispatch).toHaveBeenCalledWith('SIGNATURE_PROPOSED', { txId: '123' })
+      expect(txEvents.txDispatch).toHaveBeenCalledWith('SIGNATURE_PROPOSED', { txId: '123', signerAddress: '0x456' })
     })
 
     it('should fail to propose a signature', async () => {
@@ -196,7 +202,9 @@ describe('txSender', () => {
         data: '0x0',
       })
 
-      await expect(dispatchTxProposal('4', '0x123', '0x456', tx, '345')).rejects.toThrow('error')
+      await expect(
+        dispatchTxProposal({ chainId: '4', safeAddress: '0x123', sender: '0x456', safeTx: tx, txId: '345' }),
+      ).rejects.toThrow('error')
 
       expect(txEvents.txDispatch).toHaveBeenCalledWith('SIGNATURE_PROPOSE_FAILED', {
         txId: '345',
@@ -213,7 +221,9 @@ describe('txSender', () => {
         data: '0x0',
       })
 
-      await expect(dispatchTxProposal('4', '0x123', '0x456', tx)).rejects.toThrow('error')
+      await expect(
+        dispatchTxProposal({ chainId: '4', safeAddress: '0x123', sender: '0x456', safeTx: tx }),
+      ).rejects.toThrow('error')
 
       expect(txEvents.txDispatch).toHaveBeenCalledWith('PROPOSE_FAILED', {
         error: new Error('error'),
@@ -267,7 +277,7 @@ describe('txSender', () => {
         nonce: 1,
       })
 
-      await dispatchTxExecution(txId, safeTx, mockProvider)
+      await dispatchTxExecution(safeTx, mockProvider, {}, txId)
 
       expect(mockSafeSDK.executeTransaction).toHaveBeenCalled()
       expect(txEvents.txDispatch).toHaveBeenCalledWith('EXECUTING', { txId })
@@ -287,7 +297,7 @@ describe('txSender', () => {
         nonce: 1,
       })
 
-      await expect(dispatchTxExecution(txId, safeTx, mockProvider)).rejects.toThrow('error')
+      await expect(dispatchTxExecution(safeTx, mockProvider, {}, txId)).rejects.toThrow('error')
 
       expect(mockSafeSDK.executeTransaction).toHaveBeenCalled()
       expect(txEvents.txDispatch).toHaveBeenCalledWith('EXECUTING', { txId })
@@ -312,7 +322,7 @@ describe('txSender', () => {
         nonce: 1,
       })
 
-      await dispatchTxExecution(txId, safeTx, mockProvider)
+      await dispatchTxExecution(safeTx, mockProvider, {}, txId)
 
       expect(mockSafeSDK.executeTransaction).toHaveBeenCalled()
       expect(txEvents.txDispatch).toHaveBeenCalledWith('EXECUTING', { txId })
@@ -342,7 +352,7 @@ describe('txSender', () => {
         nonce: 1,
       })
 
-      await dispatchTxExecution(txId, safeTx, mockProvider)
+      await dispatchTxExecution(safeTx, mockProvider, {}, txId)
 
       expect(mockSafeSDK.executeTransaction).toHaveBeenCalled()
       expect(txEvents.txDispatch).toHaveBeenCalledWith('EXECUTING', { txId })
@@ -374,7 +384,7 @@ describe('txSender', () => {
         nonce: 1,
       })
 
-      await dispatchTxExecution(txId, safeTx, mockProvider)
+      await dispatchTxExecution(safeTx, mockProvider, {}, txId)
 
       expect(mockSafeSDK.executeTransaction).toHaveBeenCalled()
       expect(txEvents.txDispatch).toHaveBeenCalledWith('EXECUTING', { txId })

@@ -4,17 +4,25 @@ import { ImplementationVersionState } from '@gnosis.pm/safe-react-gateway-sdk'
 import useSafeInfo from './useSafeInfo'
 import { useAppDispatch } from '@/store'
 import { AppRoutes } from '@/config/routes'
-import { useCurrentChain } from './useChains'
 // import useAsync from './useAsync'
 // import { isValidMasterCopy } from '@/services/contracts/safeContracts'
+import { useRouter } from 'next/router'
+import { isValidSafeVersion } from './coreSDK/safeCoreSDK'
+
+const OLD_URL = 'https://gnosis-safe.io/app'
+
+const CLI_LINK = {
+  href: 'https://github.com/5afe/safe-cli',
+  title: 'Get CLI',
+}
 
 /**
  * General-purpose notifications relating to the entire Safe
  */
 const useSafeNotifications = (): void => {
   const dispatch = useAppDispatch()
-  const chain = useCurrentChain()
-  const { safe, safeAddress } = useSafeInfo()
+  const { query } = useRouter()
+  const { safe } = useSafeInfo()
   const { chainId, version, implementationVersionState } = safe
 
   /**
@@ -26,16 +34,24 @@ const useSafeNotifications = (): void => {
       return
     }
 
+    const isOldSafe = !isValidSafeVersion(version)
+
     const id = dispatch(
       showNotification({
         variant: 'warning',
-        message: `Your Safe version ${version} is out of date. Please update it.`,
         groupKey: 'safe-outdated-version',
+
+        message: isOldSafe
+          ? `Safe version ${version} is not supported by this web app anymore. You can update your Safe via the old web app here.`
+          : `Your Safe version ${version} is out of date. Please update it.`,
+
         link: {
-          href: {
-            pathname: AppRoutes.settings.setup,
-            query: { safe: `${chain?.shortName}:${safeAddress}` },
-          },
+          href: isOldSafe
+            ? `${OLD_URL}/${query.safe}/settings/details?no-redirect=true`
+            : {
+                pathname: AppRoutes.settings.setup,
+                query: { safe: query.safe },
+              },
           title: 'Update Safe',
         },
       }),
@@ -44,7 +60,7 @@ const useSafeNotifications = (): void => {
     return () => {
       dispatch(closeNotification({ id }))
     }
-  }, [dispatch, chainId, safeAddress, implementationVersionState, version, chain?.shortName])
+  }, [dispatch, implementationVersionState, version, query.safe])
 
   /**
    * Show a notification when the Safe master copy is not supported
@@ -52,10 +68,9 @@ const useSafeNotifications = (): void => {
 
   // const masterCopy = safe.implementation.value
 
-  // const [validMasterCopy] = useAsync(async () => {
-  //   if (masterCopy) {
-  //     return await isValidMasterCopy(chainId, masterCopy)
-  //   }
+  // const [validMasterCopy] = useAsync(() => {
+  //   if (!masterCopy) return
+  //   return isValidMasterCopy(chainId, masterCopy)
   // }, [chainId, masterCopy])
 
   // useEffect(() => {
@@ -63,21 +78,16 @@ const useSafeNotifications = (): void => {
   //     return
   //   }
 
-  //   const CLI_LINK = 'https://github.com/5afe/safe-cli'
-
-  //   const id = dispatch(
-  //     showNotification({
-  //       variant: 'warning',
-  //       message: `This Safe was created with an unsupported base contract.
+  // const id = dispatch(
+  //   showNotification({
+  //     variant: 'warning',
+  //     message: `This Safe was created with an unsupported base contract.
   //          The web interface might not work correctly.
   //          We recommend using the command line interface instead.`,
-  //       groupKey: 'invalid-mastercopy',
-  //       link: {
-  //         href: CLI_LINK,
-  //         title: 'Get CLI',
-  //       },
-  //     }),
-  //   )
+  //     groupKey: 'invalid-mastercopy',
+  //     link: CLI_LINK,
+  //   }),
+  // )
 
   //   return () => {
   //     dispatch(closeNotification({ id }))

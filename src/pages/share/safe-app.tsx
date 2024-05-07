@@ -7,7 +7,7 @@ import { useSafeAppUrl } from '@/hooks/safe-apps/useSafeAppUrl'
 import { useChainFromQueryParams } from '@/hooks/safe-apps/useChainFromQueryParams'
 import { SafeAppLanding } from '@/components/safe-apps/SafeAppLandingPage'
 import { AppRoutes } from '@/config/routes'
-import { checkForForbdidenRegions } from '@/utils/geo'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 const ShareSafeApp = () => {
   const router = useRouter()
@@ -54,6 +54,5 @@ const ShareSafeApp = () => {
 export default ShareSafeApp
 
 export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
-  checkForForbdidenRegions(req, res)
-  return { props: {} }
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
 }

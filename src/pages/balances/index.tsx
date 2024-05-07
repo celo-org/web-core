@@ -5,7 +5,7 @@ import AssetsTable from '@/components/balances/AssetsTable'
 import AssetsHeader from '@/components/balances/AssetsHeader'
 import useBalances from '@/hooks/useBalances'
 import { useState } from 'react'
-import { checkForForbdidenRegions } from '@/utils/geo'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 import PagePlaceholder from '@/components/common/PagePlaceholder'
 import NoAssetsIcon from '@/public/images/balances/no-assets.svg'
@@ -44,6 +44,5 @@ const Balances: NextPage = () => {
 export default Balances
 
 export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
-  checkForForbdidenRegions(req, res)
-  return { props: {} }
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
 }

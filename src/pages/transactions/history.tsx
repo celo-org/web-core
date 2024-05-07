@@ -10,7 +10,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import TxFilterForm from '@/components/transactions/TxFilterForm'
 import { useTxFilter } from '@/utils/tx-history-filter'
-import { checkForForbdidenRegions } from '@/utils/geo'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 const History: NextPage = () => {
   const [filter] = useTxFilter()
@@ -48,6 +48,5 @@ const History: NextPage = () => {
 export default History
 
 export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
-  checkForForbdidenRegions(req, res)
-  return { props: {} }
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
 }

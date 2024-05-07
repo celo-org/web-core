@@ -2,7 +2,7 @@ import type { NextPage, GetServerSideProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import LoadSafe, { loadSafeDefaultData } from '@/components/new-safe/load'
-import { checkForForbdidenRegions } from '@/utils/geo'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 const Load: NextPage = () => {
   const router = useRouter()
@@ -27,6 +27,5 @@ const Load: NextPage = () => {
 export default Load
 
 export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
-  checkForForbdidenRegions(req, res)
-  return { props: {} }
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
 }

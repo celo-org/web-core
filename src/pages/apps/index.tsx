@@ -9,11 +9,10 @@ import SafeAppsHeader from '@/components/safe-apps/SafeAppsHeader'
 import SafeAppList from '@/components/safe-apps/SafeAppList'
 import { AppRoutes } from '@/config/routes'
 import type { GetServerSideProps } from 'next'
-import { checkForForbdidenRegions } from '@/utils/geo'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
-  checkForForbdidenRegions(req, res)
-  return { props: {} }
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
 }
 
 const SafeApps: NextPage = () => {

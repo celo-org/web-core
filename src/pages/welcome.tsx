@@ -3,7 +3,7 @@ import type { NextPage, GetServerSideProps } from 'next'
 import Head from 'next/head'
 import NewSafe from '@/components/welcome/NewSafe'
 
-import { checkForForbdidenRegions } from '@/utils/geo'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 const Welcome: NextPage = () => {
   return (
@@ -20,6 +20,5 @@ const Welcome: NextPage = () => {
 export default Welcome
 
 export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
-  checkForForbdidenRegions(req, res)
-  return { props: {} }
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
 }

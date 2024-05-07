@@ -17,14 +17,14 @@ const RESTRICED_SUBREGION: Record<string, Set<string>> = {
 }
 
 export function isForbiddenLand(iso3166Country: string, iso3166Region: string) {
-  const iso3166CountryUppercase = iso3166Country.toUpperCase()
+  const iso3166CountryUppercase = iso3166Country?.toUpperCase()
   return (
     RESTRICTED_COUNTRIES.has(iso3166CountryUppercase) ||
     RESTRICED_SUBREGION[iso3166CountryUppercase]?.has(iso3166Region)
   )
 }
 
-export function checkForForbdidenRegions(req: IncomingMessage, res: OutgoingMessage) {
+export function checkForForbiddenRegions(req: IncomingMessage, res: OutgoingMessage) {
   const coutry = req.headers[HTTP_HEADER_COUNTRY] as string
   const region = req.headers[HTTP_HEADER_REGION] as string
 
@@ -32,5 +32,6 @@ export function checkForForbdidenRegions(req: IncomingMessage, res: OutgoingMess
 
   if (isForbiddenLand(coutry, region)) {
     res.end('451 Unavailable for Legal Reasons')
+    return { redirect: { destination: '/terms', permanent: false } }
   }
 }

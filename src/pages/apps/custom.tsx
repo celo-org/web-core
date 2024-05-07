@@ -8,11 +8,10 @@ import SafeAppList from '@/components/safe-apps/SafeAppList'
 import SafeAppsSDKLink from '@/components/safe-apps/SafeAppsSDKLink'
 import { RemoveCustomAppModal } from '@/components/safe-apps/RemoveCustomAppModal'
 import type { SafeAppData } from '@safe-global/safe-gateway-typescript-sdk'
-import { checkForForbdidenRegions } from '@/utils/geo'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
-  checkForForbdidenRegions(req, res)
-  return { props: {} }
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
 }
 
 const CustomSafeApps: NextPage = () => {

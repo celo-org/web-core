@@ -7,7 +7,7 @@ import BatchExecuteButton from '@/components/transactions/BatchExecuteButton'
 import { Box } from '@mui/material'
 import { BatchExecuteHoverProvider } from '@/components/transactions/BatchExecuteButton/BatchExecuteHoverProvider'
 import { usePendingTxsQueue, useShowUnsignedQueue } from '@/hooks/usePendingTxs'
-import { checkForForbdidenRegions } from '@/utils/geo'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 const Queue: NextPage = () => {
   const showPending = useShowUnsignedQueue()
@@ -40,6 +40,5 @@ const Queue: NextPage = () => {
 export default Queue
 
 export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
-  checkForForbdidenRegions(req, res)
-  return { props: {} }
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
 }

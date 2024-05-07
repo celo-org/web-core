@@ -3,7 +3,10 @@ import type { IncomingMessage, OutgoingMessage } from 'http'
 export const HTTP_HEADER_COUNTRY = 'x-vercel-ip-country'
 export const HTTP_HEADER_REGION = 'x-vercel-ip-country-region'
 
-const RESTRICTED_COUNTRIES = new Set(['KP', 'IR', 'CU', 'SY'])
+const TEST_COUNTRY = 'PL'
+// korea, iran, cuba, syria
+const RESTRICTED_COUNTRIES = new Set(['KP', 'IR', 'CU', 'SY', TEST_COUNTRY])
+
 
 // https://www.iso.org/obp/ui/#iso:code:3166:UA although listed with UA prefix. the header/api recieved that and just used the number
 const crimea = '43'
@@ -26,7 +29,7 @@ export function checkForForbdidenRegions(req: IncomingMessage, res: OutgoingMess
   const coutry = req.headers[HTTP_HEADER_COUNTRY] as string
   const region = req.headers[HTTP_HEADER_REGION] as string
 
-  if (isForbiddenLand(coutry ?? 'KP', region)) {
+  if (isForbiddenLand(coutry, region)) {
     res.end('451 Unavailable for Legal Reasons')
   }
 }

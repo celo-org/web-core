@@ -7,7 +7,6 @@ const TEST_COUNTRY = 'PL'
 // korea, iran, cuba, syria
 const RESTRICTED_COUNTRIES = new Set(['KP', 'IR', 'CU', 'SY', TEST_COUNTRY])
 
-
 // https://www.iso.org/obp/ui/#iso:code:3166:UA although listed with UA prefix. the header/api recieved that and just used the number
 const crimea = '43'
 const luhansk = '09'

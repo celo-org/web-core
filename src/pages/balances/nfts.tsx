@@ -1,5 +1,5 @@
 import { type ReactElement, memo } from 'react'
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps } from 'next'
 import Head from 'next/head'
 import { Grid, Skeleton, Typography } from '@mui/material'
 import AssetsHeader from '@/components/balances/AssetsHeader'
@@ -7,6 +7,7 @@ import NftCollections from '@/components/nfts/NftCollections'
 import SafeAppCard from '@/components/safe-apps/SafeAppCard'
 import { SafeAppsTag } from '@/config/constants'
 import { useRemoteSafeApps } from '@/hooks/safe-apps/useRemoteSafeApps'
+import { checkForForbdidenRegions } from '@/utils/geo'
 
 // `React.memo` requires a `displayName`
 const NftApps = memo(function NftApps(): ReactElement | null {
@@ -62,3 +63,8 @@ const NFTs: NextPage = () => {
 }
 
 export default NFTs
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  checkForForbdidenRegions(req, res)
+  return { props: {} }
+}

@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
 import Head from 'next/head'
+import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { Box, CircularProgress } from '@mui/material'
 import { useSafeAppUrl } from '@/hooks/safe-apps/useSafeAppUrl'
 import { useChainFromQueryParams } from '@/hooks/safe-apps/useChainFromQueryParams'
 import { SafeAppLanding } from '@/components/safe-apps/SafeAppLandingPage'
 import { AppRoutes } from '@/config/routes'
+import { checkForForbdidenRegions } from '@/utils/geo'
 
 const ShareSafeApp = () => {
   const router = useRouter()
@@ -50,3 +52,8 @@ const ShareSafeApp = () => {
 }
 
 export default ShareSafeApp
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  checkForForbdidenRegions(req, res)
+  return { props: {} }
+}

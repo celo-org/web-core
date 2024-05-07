@@ -31,7 +31,6 @@ export function checkForForbiddenRegions(req: IncomingMessage, res: OutgoingMess
   console.info('country', coutry, 'region', region)
 
   if (isForbiddenLand(coutry, region)) {
-    res.end('451 Unavailable for Legal Reasons')
     return { redirect: { destination: '/terms', permanent: false } }
   }
 }

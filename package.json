@@ -29,7 +29,7 @@
     "static-serve": "yarn build && yarn serve"
   },
   "engines": {
-    "node": "18.20.2"
+    "node": ">=18"
   },
   "pre-commit": [
     "lint"

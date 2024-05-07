@@ -28,6 +28,8 @@ export function checkForForbdidenRegions(req: IncomingMessage, res: OutgoingMess
   const coutry = req.headers[HTTP_HEADER_COUNTRY] as string
   const region = req.headers[HTTP_HEADER_REGION] as string
 
+  console.info('country', coutry, 'region', region)
+
   if (isForbiddenLand(coutry, region)) {
     res.end('451 Unavailable for Legal Reasons')
   }

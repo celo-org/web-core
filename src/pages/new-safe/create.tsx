@@ -1,5 +1,7 @@
 import Head from 'next/head'
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps } from 'next'
+
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 import CreateSafe from '@/components/new-safe/create'
 
@@ -16,3 +18,7 @@ const Open: NextPage = () => {
 }
 
 export default Open
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
+}

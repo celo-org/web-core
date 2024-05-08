@@ -1,8 +1,8 @@
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { useCallback } from 'react'
 import { Box, CircularProgress } from '@mui/material'
-
+import { checkForForbiddenRegions } from '@/utils/geo'
 import { useSafeAppUrl } from '@/hooks/safe-apps/useSafeAppUrl'
 import { useSafeApps } from '@/hooks/safe-apps/useSafeApps'
 import SafeAppsInfoModal from '@/components/safe-apps/SafeAppsInfoModal'
@@ -84,3 +84,7 @@ const SafeApps: NextPage = () => {
 }
 
 export default SafeApps
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
+}

@@ -8,6 +8,12 @@ import SafeAppsSDKLink from '@/components/safe-apps/SafeAppsSDKLink'
 import SafeAppsHeader from '@/components/safe-apps/SafeAppsHeader'
 import SafeAppList from '@/components/safe-apps/SafeAppList'
 import { AppRoutes } from '@/config/routes'
+import type { GetServerSideProps } from 'next'
+import { checkForForbiddenRegions } from '@/utils/geo'
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
+}
 
 const SafeApps: NextPage = () => {
   const router = useRouter()

@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps } from 'next'
 import Head from 'next/head'
 import useTxQueue from '@/hooks/useTxQueue'
 import PaginatedTxns from '@/components/common/PaginatedTxns'
@@ -7,6 +7,7 @@ import BatchExecuteButton from '@/components/transactions/BatchExecuteButton'
 import { Box } from '@mui/material'
 import { BatchExecuteHoverProvider } from '@/components/transactions/BatchExecuteButton/BatchExecuteHoverProvider'
 import { usePendingTxsQueue, useShowUnsignedQueue } from '@/hooks/usePendingTxs'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 const Queue: NextPage = () => {
   const showPending = useShowUnsignedQueue()
@@ -37,3 +38,7 @@ const Queue: NextPage = () => {
 }
 
 export default Queue
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
+}

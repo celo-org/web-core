@@ -1,8 +1,10 @@
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps } from 'next'
+
 import Head from 'next/head'
 
 import SingleTx from '@/components/transactions/SingleTx'
 import Typography from '@mui/material/Typography'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 const SingleTransaction: NextPage = () => {
   return (
@@ -23,3 +25,7 @@ const SingleTransaction: NextPage = () => {
 }
 
 export default SingleTransaction
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
+}

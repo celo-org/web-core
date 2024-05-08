@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps } from 'next'
 import Head from 'next/head'
 import useTxHistory from '@/hooks/useTxHistory'
 import PaginatedTxns from '@/components/common/PaginatedTxns'
@@ -10,6 +10,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import TxFilterForm from '@/components/transactions/TxFilterForm'
 import { useTxFilter } from '@/utils/tx-history-filter'
+import { checkForForbiddenRegions } from '@/utils/geo'
 
 const History: NextPage = () => {
   const [filter] = useTxFilter()
@@ -45,3 +46,7 @@ const History: NextPage = () => {
 }
 
 export default History
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
+}

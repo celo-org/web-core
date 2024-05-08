@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps } from 'next'
 import Head from 'next/head'
 
 import { useSafeApps } from '@/hooks/safe-apps/useSafeApps'
@@ -8,6 +8,11 @@ import SafeAppList from '@/components/safe-apps/SafeAppList'
 import SafeAppsSDKLink from '@/components/safe-apps/SafeAppsSDKLink'
 import { RemoveCustomAppModal } from '@/components/safe-apps/RemoveCustomAppModal'
 import type { SafeAppData } from '@safe-global/safe-gateway-typescript-sdk'
+import { checkForForbiddenRegions } from '@/utils/geo'
+
+export const getServerSideProps: GetServerSideProps<{}> = async ({ req, res }) => {
+  return checkForForbiddenRegions(req, res) ?? { props: {} }
+}
 
 const CustomSafeApps: NextPage = () => {
   // TODO: create a custom hook instead of use useSafeApps

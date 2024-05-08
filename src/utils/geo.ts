@@ -3,9 +3,8 @@ import type { IncomingMessage, OutgoingMessage } from 'http'
 export const HTTP_HEADER_COUNTRY = 'x-vercel-ip-country'
 export const HTTP_HEADER_REGION = 'x-vercel-ip-country-region'
 
-const TEST_COUNTRY = 'PL'
 // korea, iran, cuba, syria
-const RESTRICTED_COUNTRIES = new Set(['KP', 'IR', 'CU', 'SY', TEST_COUNTRY])
+const RESTRICTED_COUNTRIES = new Set(['KP', 'IR', 'CU', 'SY'])
 
 // https://www.iso.org/obp/ui/#iso:code:3166:UA although listed with UA prefix. the header/api recieved that and just used the number
 const crimea = '43'
